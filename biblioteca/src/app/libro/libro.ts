@@ -32,10 +32,12 @@ export class Libro implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {
+    // Sin marca de sesión, regresa al login
     if (!localStorage.getItem('sesionBiblioteca')) {
       this.router.navigate(['/login']);
       return;
     }
+    // Recupera el arreglo guardado como texto JSON
     const datos = localStorage.getItem('librosBiblioteca');
     this.libros = datos ? JSON.parse(datos) : [];
   }
@@ -105,6 +107,22 @@ export class Libro implements OnInit {
     this.limpiar();
   }
 
+  eliminar(libro: LibroRegistro) {
+    // Cancelar la confirmación conserva el registro
+    if (!confirm('¿Eliminar el libro "' + libro.titulo + '"?')) {
+      return;
+    }
+
+    // Se queda con todos los libros excepto el eliminado
+    this.libros = this.libros.filter((l) => l.id !== libro.id);
+    this.guardarEnStorage();
+
+    // Si se estaba editando justo ese libro, se sale del modo edición
+    if (this.editandoId === libro.id) {
+      this.limpiar();
+    }
+  }
+
   limpiar() {
     this.codigo = '';
     this.titulo = '';
@@ -115,6 +133,7 @@ export class Libro implements OnInit {
   }
 
   cerrarSesion() {
+    // Borra solo la marca de sesión; los libros se conservan
     localStorage.removeItem('sesionBiblioteca');
     this.router.navigate(['/login']);
   }
