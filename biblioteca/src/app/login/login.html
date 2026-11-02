@@ -1,0 +1,7 @@
+<h2>Iniciar sesión</h2>
+<input [(ngModel)]="usuario" placeholder="Usuario" />
+<input [(ngModel)]="clave" type="password" placeholder="Contraseña" />
+<button (click)="entrar()">Entrar</button>
+@if (error) {
+  <p style="color: red">{{ error }}</p>
+}
