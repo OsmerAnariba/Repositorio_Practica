@@ -26,6 +26,9 @@ export class Libro implements OnInit {
   anio: number | null = null;
   mensaje = '';
 
+  // null = modo creación; número = ID del libro que se está editando
+  editandoId: number | null = null;
+
   constructor(private router: Router) {}
 
   ngOnInit() {
@@ -57,20 +60,48 @@ export class Libro implements OnInit {
   guardar() {
     if (!this.validar()) return;
 
-    // ID automático: el mayor existente + 1 (o 1 si no hay registros)
-    const nuevoId = this.libros.length
-      ? Math.max(...this.libros.map((l) => l.id)) + 1
-      : 1;
+    if (this.editandoId === null) {
+      // CREAR: ID automático = mayor existente + 1
+      const nuevoId = this.libros.length
+        ? Math.max(...this.libros.map((l) => l.id)) + 1
+        : 1;
 
-    this.libros.push({
-      id: nuevoId,
-      codigo: this.codigo.trim(),
-      titulo: this.titulo.trim(),
-      autor: this.autor.trim(),
-      anio: this.anio!,
-    });
+      this.libros.push({
+        id: nuevoId,
+        codigo: this.codigo.trim(),
+        titulo: this.titulo.trim(),
+        autor: this.autor.trim(),
+        anio: this.anio!,
+      });
+    } else {
+      // ACTUALIZAR: mismo ID, misma cantidad de filas
+      const i = this.libros.findIndex((l) => l.id === this.editandoId);
+      if (i !== -1) {
+        this.libros[i] = {
+          id: this.editandoId,
+          codigo: this.codigo.trim(),
+          titulo: this.titulo.trim(),
+          autor: this.autor.trim(),
+          anio: this.anio!,
+        };
+      }
+    }
 
     this.guardarEnStorage();
+    this.limpiar();
+  }
+
+  editar(libro: LibroRegistro) {
+    // Copia los valores al formulario; el registro guardado no se toca
+    this.editandoId = libro.id;
+    this.codigo = libro.codigo;
+    this.titulo = libro.titulo;
+    this.autor = libro.autor;
+    this.anio = libro.anio;
+    this.mensaje = '';
+  }
+
+  cancelar() {
     this.limpiar();
   }
 
@@ -80,6 +111,7 @@ export class Libro implements OnInit {
     this.autor = '';
     this.anio = null;
     this.mensaje = '';
+    this.editandoId = null;
   }
 
   cerrarSesion() {
