@@ -1,2 +1,30 @@
-<p>CRUD de libros</p>
+
+
+<button (click)="cerrarSesion()">Cerrar sesión</button>
+
+<h2>Catálogo de libros</h2>
+<h3>Total de registros: {{ libros.length }}</h3>
+
+@if (libros.length === 0) {
+  <p>No hay libros registrados.</p>
+} @else {
+  <table border="1">
+    <tr>
+      <th>ID</th>
+      <th>Código</th>
+      <th>Título</th>
+      <th>Autor</th>
+      <th>Año</th>
+    </tr>
+    @for (l of libros; track l.id) {
+      <tr>
+        <td>{{ l.id }}</td>
+        <td>{{ l.codigo }}</td>
+        <td>{{ l.titulo }}</td>
+        <td>{{ l.autor }}</td>
+        <td>{{ l.anio }}</td>
+      </tr>
+    }
+  </table>
+}
 
