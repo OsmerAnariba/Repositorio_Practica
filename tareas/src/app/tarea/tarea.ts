@@ -23,8 +23,11 @@ export class Tarea implements OnInit {
   titulo = '';
   descripcion = '';
   fechaLimite = '';
-  estado = 'Pendiente'; // valor inicial propuesto al crear
+  estado = 'Pendiente';
   mensaje = '';
+
+  // null = modo creación; número = ID de la tarea que se está editando
+  editandoId: number | null = null;
 
   constructor(private router: Router) {}
 
@@ -61,20 +64,48 @@ export class Tarea implements OnInit {
   guardar() {
     if (!this.validar()) return;
 
-    // ID automático: el mayor existente + 1 (o 1 si no hay registros)
-    const nuevoId = this.tareas.length
-      ? Math.max(...this.tareas.map((t) => t.id)) + 1
-      : 1;
+    if (this.editandoId === null) {
+      // CREAR: ID automático = mayor existente + 1
+      const nuevoId = this.tareas.length
+        ? Math.max(...this.tareas.map((t) => t.id)) + 1
+        : 1;
 
-    this.tareas.push({
-      id: nuevoId,
-      titulo: this.titulo.trim(),
-      descripcion: this.descripcion.trim(),
-      fechaLimite: this.fechaLimite,
-      estado: this.estado,
-    });
+      this.tareas.push({
+        id: nuevoId,
+        titulo: this.titulo.trim(),
+        descripcion: this.descripcion.trim(),
+        fechaLimite: this.fechaLimite,
+        estado: this.estado,
+      });
+    } else {
+      // ACTUALIZAR: mismo ID, misma cantidad de filas
+      const i = this.tareas.findIndex((t) => t.id === this.editandoId);
+      if (i !== -1) {
+        this.tareas[i] = {
+          id: this.editandoId,
+          titulo: this.titulo.trim(),
+          descripcion: this.descripcion.trim(),
+          fechaLimite: this.fechaLimite,
+          estado: this.estado,
+        };
+      }
+    }
 
     this.guardarEnStorage();
+    this.limpiar();
+  }
+
+  editar(tarea: TareaRegistro) {
+    // Copia los valores al formulario; el registro guardado no se toca
+    this.editandoId = tarea.id;
+    this.titulo = tarea.titulo;
+    this.descripcion = tarea.descripcion;
+    this.fechaLimite = tarea.fechaLimite;
+    this.estado = tarea.estado;
+    this.mensaje = '';
+  }
+
+  cancelar() {
     this.limpiar();
   }
 
@@ -84,6 +115,7 @@ export class Tarea implements OnInit {
     this.fechaLimite = '';
     this.estado = 'Pendiente';
     this.mensaje = '';
+    this.editandoId = null;
   }
 
   cerrarSesion() {

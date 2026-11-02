@@ -1,6 +1,6 @@
 <button (click)="cerrarSesion()">Cerrar sesión</button>
 
-<h2>Nueva tarea</h2>
+<h2>{{ editandoId === null ? 'Nueva tarea' : 'Editar tarea (ID ' + editandoId + ')' }}</h2>
 <input [(ngModel)]="titulo" placeholder="Título" />
 <br />
 <textarea [(ngModel)]="descripcion" placeholder="Descripción"></textarea>
@@ -10,7 +10,10 @@
   <option value="Pendiente">Pendiente</option>
   <option value="Completada">Completada</option>
 </select>
-<button (click)="guardar()">Crear</button>
+<button (click)="guardar()">{{ editandoId === null ? 'Crear' : 'Actualizar' }}</button>
+@if (editandoId !== null) {
+  <button (click)="cancelar()">Cancelar</button>
+}
 @if (mensaje) {
   <p style="color: red">{{ mensaje }}</p>
 }
@@ -28,6 +31,7 @@
       <th>Descripción</th>
       <th>Fecha límite</th>
       <th>Estado</th>
+      <th>Acciones</th>
     </tr>
     @for (t of tareas; track t.id) {
       <tr>
@@ -36,6 +40,9 @@
         <td>{{ t.descripcion }}</td>
         <td>{{ t.fechaLimite }}</td>
         <td>{{ t.estado }}</td>
+        <td>
+          <button (click)="editar(t)">Editar</button>
+        </td>
       </tr>
     }
   </table>
