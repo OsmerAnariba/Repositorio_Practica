@@ -1,5 +1,20 @@
 <button (click)="cerrarSesion()">Cerrar sesión</button>
 
+<h2>Nueva tarea</h2>
+<input [(ngModel)]="titulo" placeholder="Título" />
+<br />
+<textarea [(ngModel)]="descripcion" placeholder="Descripción"></textarea>
+<br />
+<input [(ngModel)]="fechaLimite" type="date" />
+<select [(ngModel)]="estado">
+  <option value="Pendiente">Pendiente</option>
+  <option value="Completada">Completada</option>
+</select>
+<button (click)="guardar()">Crear</button>
+@if (mensaje) {
+  <p style="color: red">{{ mensaje }}</p>
+}
+
 <h2>Agenda de tareas</h2>
 <h3>Total de registros: {{ tareas.length }}</h3>
 
