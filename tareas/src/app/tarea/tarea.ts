@@ -109,6 +109,22 @@ export class Tarea implements OnInit {
     this.limpiar();
   }
 
+    eliminar(tarea: TareaRegistro) {
+    // Cancelar la confirmación conserva el registro
+    if (!confirm('¿Eliminar la tarea "' + tarea.titulo + '"?')) {
+      return;
+    }
+
+    // Se queda con todas las tareas excepto la eliminada
+    this.tareas = this.tareas.filter((t) => t.id !== tarea.id);
+    this.guardarEnStorage();
+
+    // Si se estaba editando justo esa tarea, se sale del modo edición
+    if (this.editandoId === tarea.id) {
+      this.limpiar();
+    }
+  }
+
   limpiar() {
     this.titulo = '';
     this.descripcion = '';
